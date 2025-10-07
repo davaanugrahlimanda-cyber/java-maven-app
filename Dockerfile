@@ -1,17 +1,11 @@
-# Tahap 1: Build dengan Maven
-FROM maven:3.9.4-eclipse-temurin-17 AS build
-
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-
-# Build project (hasil ada di target/)
-RUN mvn clean package -DskipTests
-
-# Tahap 2: Run dengan JDK ringan
+# Gunakan base image Java
 FROM openjdk:17-jdk-slim
 
+# Set direktori kerja di dalam container
 WORKDIR /app
-COPY --from=build /app/target/java-maven-app-1.1.7-shaded.jar app.jar
 
+# Copy hasil build Maven (fat JAR) ke dalam container
+COPY target/java-maven-app-1.1.7-shaded.jar app.jar
+
+# Perintah untuk menjalankan aplikasi
 ENTRYPOINT ["java", "-jar", "app.jar"]
